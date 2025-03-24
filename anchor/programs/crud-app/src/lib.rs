@@ -8,7 +8,19 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod crudapp {
     use super::*;
 
+    pub fn create_journal_entry(ctx: Context<CreateEntry>, ) -> Result<()> {
+
+    }
  
+}
+
+#[derive(accounts)]
+pub struct CreateEntry<'info> {
+  #[account(
+    init,
+    seeds = [title.as_bytes(), owner.key.as_ref()],
+    bump,
+  )]
 }
 
 #[account]
