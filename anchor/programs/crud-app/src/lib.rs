@@ -6,6 +6,8 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 
 #[program]
 pub mod crudapp {
+    use anchor_lang::solana_program::address_lookup_table::instruction;
+
     use super::*;
 
     pub fn create_journal_entry(ctx: Context<CreateEntry>, title: String, message: String) -> Result<()> {
@@ -22,8 +24,10 @@ pub mod crudapp {
       journal_entry.message = message;
 
       Ok(())
-
       }
+
+    pub fn delete_journal_entry(ctx: Context<DeleteEntry>, _title: String) -> Result<()> {
+      Ok(())
     }
 
 #[derive(accounts)]
@@ -61,6 +65,23 @@ pub struct UpdateEntry<'info> {
   pub owner: Signer<'info>
 
   pub system_program: Program<'info, System>,
+}
+
+#[derive(accounts)]
+#[instruction(title: String)]
+pub struct DeleteEntry<'info> {
+  #[account(
+    mut,
+    seeds = [title.as_bytes(), owner.key().as_ref()],
+    bump,
+    close = owner,
+  )]
+  pub journal_entry: Account<'info, JournalEntryState>,
+
+  #[account(mut)]
+  pub owner: Signer<'info>,
+}
+
 }
 
 #[account]
