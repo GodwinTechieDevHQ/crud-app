@@ -68,9 +68,34 @@ export function useCrudappProgramAccount({ account }: { account: PublicKey }) {
     queryFn: () => program.account.JournalEntryState.fetch(account),
   })
 
-  const createEntry = useMutation<string, Error, CreateEntryArgs>
+  const updateEntry = useMutation<string, Error, CreateEntryArgs>({
+    mutationKey: ["JournalEntry", "update", { cluster }],
+    mutationFn: async ({ title, message, owner }) => {
+      return program.methods.UpdateJournalEntry(title, message).rpc();
+    },
+    onSuccess: (signature) => {
+      transactionToast(signature),
+      accounts.refetch();
+    },
+    onError: (error) => {
+      toast.error(`Error updating entry: ${error.message}`);
+    } 
+  })
+
+  const deleteEntry = useMutation({
+    mutationKey: ["JournalEntry", "delete", { cluster }],
+    mutationFn: (title: string) => {
+      return program.methods.DeleteJournalEntry(title).rpc();
+    },
+    onSuccess: (signature) => {
+      transactionToast(signature),
+      accounts.refetch();
+    },
+  })
 
   return {
     accountQuery,
+    updateEntry,
+    deleteEntry,
   }
 }
