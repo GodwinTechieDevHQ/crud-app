@@ -54,6 +54,7 @@ export function useCrudappProgram() {
     accounts,
     getProgramAccount,
     createEntry,
+    programId,
   }
 }
 
