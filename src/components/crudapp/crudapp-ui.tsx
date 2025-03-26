@@ -1,22 +1,52 @@
 'use client'
 
 import { Keypair, PublicKey } from '@solana/web3.js'
-import { useMemo } from 'react'
 import { ellipsify } from '../ui/ui-layout'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { useCrudappProgram, useCrudappProgramAccount } from './crudapp-data-access'
+import { useState } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export function CrudappCreate() {
-  const { initialize } = useCrudappProgram()
+  const [ title, setTitle ] = useState('');
+  const [ message, setMessage ] = useState('');
+  const { createEntry } = useCrudappProgram();
+  const { publicKey } = useWallet();
+
+  const isFormValid = title.trim() !== '' && message.trim() !== '';
+
+  const handleSubmit =  () => {
+    if (publicKey && isFormValid) {
+      createEntry.mutateAsync({ title, message, owner: publicKey });
+    } 
+   };
+
+   if (!publicKey) {
+    <p>Connect Your Wallet.</p>
+   }
+
+
 
   return (
-    <button
-      className="btn btn-xs lg:btn-md btn-primary"
-      onClick={() => initialize.mutateAsync(Keypair.generate())}
-      disabled={initialize.isPending}
-    >
-      Create {initialize.isPending && '...'}
-    </button>
+   <div>
+    <input 
+      type="text" 
+      value={title} 
+      onChange={(e) => setTitle(e.target.value)} 
+      placeholder="Title"
+      className='input input-bordered w-full max-w-xs'
+    />
+    <textarea
+          placeholder="Message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className='textarea textarea-bordered w-full max-w-xs' />
+
+    <button 
+      onClick={handleSubmit}
+      disabled={createEntry.isPending || !isFormValid}
+      className='btn btn-xs lg:btn-md btn-primary' />
+   </div>
   )
 }
 
