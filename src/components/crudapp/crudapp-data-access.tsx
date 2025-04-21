@@ -27,7 +27,7 @@ export function useCrudappProgram() {
 
   const accounts = useQuery({
     queryKey: ['crudapp', 'all', { cluster }],
-    queryFn: () => program.account.JournalEntryState.all(),
+    queryFn: () => program.account.journalEntryState.all(),
   })
 
   const getProgramAccount = useQuery({
@@ -38,7 +38,7 @@ export function useCrudappProgram() {
   const createEntry = useMutation<string, Error, CreateEntryArgs>({
     mutationKey: ["JournalEntry", "create", { cluster }],
     mutationFn: async ({ title, message, owner }) => {
-      return program.methods.CreateJournalEntry(title, message).rpc();
+      return program.methods.createJournalEntry(title, message).rpc();
     },
     onSuccess: (signature) => {
       transactionToast(signature),
@@ -66,7 +66,7 @@ export function useCrudappProgramAccount({ account }: { account: PublicKey }) {
 
   const accountQuery = useQuery({
     queryKey: ['crudapp', 'fetch', { cluster, account }],
-    queryFn: () => program.account.JournalEntryState.fetch(account),
+    queryFn: () => program.account.journalEntryState.fetch(account),
   })
 
   const updateEntry = useMutation<string, Error, CreateEntryArgs>({
